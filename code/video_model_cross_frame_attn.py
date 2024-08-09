@@ -99,7 +99,7 @@ class VideoModel(torch.nn.Module):
                     use_keyframe_only=False,  
                     classifier_guidance_flag = False, per_frame_classifier_guidance = False, 
                     use_self_attention_injection=True, 
-                    target_index = -1, device='cuda:0'):
+                    target_index = -1, device='cuda'):
         '''
         use_keyframe_only: if set to True, we will attend only to an anchor frame. if set to False, we will attend to an anchor frame and the previous frame
         classifier_guidance_flag: if set to True, we will perform the latent update. if set to False, we won't perform the latent update

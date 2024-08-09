@@ -2,7 +2,7 @@ import torch
 import imageio
 import numpy as np
 
-device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 torch_dtype=torch.float32
 
 def warp(latents, warp_grid):

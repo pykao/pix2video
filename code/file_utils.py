@@ -6,7 +6,7 @@ from PIL import Image
 import os
 from einops import repeat, rearrange
 
-device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def get_data_paths(folder_path, output_path, noFrames, reverse=False):
     image_paths = []
