@@ -17,6 +17,14 @@ from video_model_cross_frame_attn import *
 from file_utils import *
 from common import *
 
+def resize_image(img, size):
+    """
+    Resize an image to the given size.
+    """
+    img_pil = Image.fromarray(img)
+    img_np = np.array(img_pil.resize(size, resample=Image.Resampling.LANCZOS))
+    return img_np
+
 def create_video_with_images(glob_pattern: str, output_filename: str):
     """
     Create a video from a set of images using ffmpeg.
@@ -50,10 +58,10 @@ strength = 1.0
 parser = argparse.ArgumentParser()
 
 #######This file is to test the setup where we do not do any finetuning and we use the cfg update############
-parser.add_argument("--config", type=str, default='/home/ceylan/pix2video/example_data/blackswan/blackswan_config_edit1.cfg',help="config file")
-parser.add_argument("--input_path", type=str, default='/home/ceylan/pix2video/example_data/blackswan',help="input path")
-parser.add_argument("--output_path", type=str, default='/home/ceylan/pix2video/example_data/blackswan_out',help="output path")
-parser.add_argument("--inversion_path", type=str, default='/home/ceylan/pix2video/example_data/blackswan/inversion', help="inversion path")
+parser.add_argument("--config", type=str, default='../example_data/blackswan/blackswan_config_edit1.cfg',help="config file")
+parser.add_argument("--input_path", type=str, default='../example_data/blackswan',help="input path")
+parser.add_argument("--output_path", type=str, default='../example_data/blackswan_out',help="output path")
+parser.add_argument("--inversion_path", type=str, default='../example_data/blackswan/inversion', help="inversion path")
 parser.add_argument("--a_reverse", type=int, default=0,help="whether to process in reverse order")
 parser.add_argument("--use_keyframe_only", type=int, default=0,help="whether to attend only to an anchor frame or not")
 parser.add_argument("--classifier_guidance_flag", type=int, default=1,help="whether to do latent update")
@@ -73,7 +81,6 @@ inversion_path = os.path.join(os.path.dirname(opt.config), 'inversion_no_finetun
 print("INVERSION_PATH: ", inversion_path)
 
 noFrames = int(config['Arguments']['noFrames'])
-noFrames=10
 edit_prompt = config['Arguments']['edit_prompt']
 org_prompt = config['Arguments']['org_prompt']
 a_reverse = opt.a_reverse
@@ -99,6 +106,7 @@ depths = []
 for i in range(noFrames):
     #load image
     input_image = load_512(image_paths[i])
+    input_image = resize_image(input_image, (384, 384))
     images.append(input_image)
 
     H = input_image.shape[0]
@@ -120,7 +128,8 @@ video_model = VideoModel(ldm_stable, NUM_DDIM_STEPS, GUIDANCE_SCALE, output_path
 #perform inversion
 video_model.perform_inversion(dataset)
 
-video_model.test(dataset, output_path, [edit_prompt])
+with torch.cuda.amp.autocast(dtype=torch.float16):
+    video_model.test(dataset, output_path, [edit_prompt])
 
 glob_pattern = os.path.join(output_path, './*.png')
 output = os.path.join(output_path, 'out_cfg.gif')
