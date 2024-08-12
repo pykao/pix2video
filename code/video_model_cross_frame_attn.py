@@ -533,6 +533,7 @@ class VideoModel(torch.nn.Module):
                                 self_attn_query_features_uncond_list[s].append(torch.cat([self_attn_query_features_uncond_list_first[s][j], self_attn_query_features_uncond_list_cur[s][j]], dim=1))
                                 self_attn_query_features_cond_list[s].append(torch.cat([self_attn_query_features_cond_list_first[s][j], self_attn_query_features_cond_list_cur[s][j]], dim=1))
                 
+                #import IPython; IPython.embed();
                 image = Image.fromarray(img[0])
                 image = np.array(image.convert("RGB"))
                 imageio.imwrite(os.path.join(output_path, '%06d.png' % (b)), image)
