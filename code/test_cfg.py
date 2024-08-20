@@ -106,7 +106,7 @@ depths = []
 for i in range(noFrames):
     #load image
     input_image = load_512(image_paths[i])
-    input_image = resize_image(input_image, (384, 384))
+    input_image = resize_image(input_image, (256, 256))
     images.append(input_image)
 
     H = input_image.shape[0]
